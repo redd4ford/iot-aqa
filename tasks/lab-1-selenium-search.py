@@ -32,7 +32,7 @@ def main():
     page.answer(value=result, enter=False)
 
     time.sleep(10)
-    page.browser.close()
+    page.browser.quit()
 
 
 if __name__ == '__main__':
