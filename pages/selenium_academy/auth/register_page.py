@@ -7,6 +7,7 @@ from config import (
     MadisonIslandEndpoints,
 )
 from pages.base_page import BasePage
+from pages.selenium_academy.auth import AccountDashboardPage
 
 
 class RegisterPage(BasePage):
@@ -20,6 +21,16 @@ class RegisterPage(BasePage):
     CONFIRM_PASSWORD_INPUT = (By.XPATH, '//*[@id="confirmation"]')
     NEWSLETTER_CHECKBOX = (By.XPATH, '//*[@id="is_subscribed"]')
     REGISTER_BUTTON = (By.XPATH, '/html/body/div/div[2]/div[2]/div/div/div[2]/form/div[2]/button')
+    REGISTER_ERROR_MESSAGE_BOX = (By.XPATH, '//*[@id="top"]/body/div/div[2]/div[2]/div/div/div[2]/ul/li/ul/li/span')
+
+    class StaticData:
+        REGISTER_ERROR_WITH_EMAIL = (
+            'There is already an account with this email address. If you are sure that it '
+            'is your email address, click here to get your password and access your account.'
+        )
+        REGISTER_SUCCESS = (
+            'Thank you for registering with Madison Island.'
+        )
 
     def __init__(self, browser):
         super().__init__(browser)
@@ -60,6 +71,10 @@ class RegisterPage(BasePage):
     def register_button(self):
         return self.browser.find_element(*RegisterPage.REGISTER_BUTTON)
 
+    @property
+    def register_error_message_box(self):
+        return self.browser.find_element(*RegisterPage.REGISTER_ERROR_MESSAGE_BOX)
+
     def _input_name_to_element(self, input_name):
         return {
             'first_name': self.first_name_input,
@@ -70,7 +85,7 @@ class RegisterPage(BasePage):
             'confirm_password': self.confirm_password_input,
         }[input_name]
 
-    def register(self, input_data: dict, sign_up_for_news: bool = False):
+    def register(self, input_data: dict, sign_up_for_news: bool = False) -> AccountDashboardPage:
         for input_name, input_value in input_data.items():
             self._input_name_to_element(input_name).send_keys(input_value)
 
@@ -78,3 +93,12 @@ class RegisterPage(BasePage):
             self.sign_up_for_newsletter_checkbox.click()
 
         self.register_button.click()
+
+        return AccountDashboardPage(self.browser)
+
+    def is_error(self) -> bool:
+        self.wait_for_presence_of_all_elements_located(
+            locator=RegisterPage.REGISTER_ERROR_MESSAGE_BOX,
+            timeout=Config.DEFAULT_TIMEOUT * 2
+        )
+        return self.register_error_message_box

@@ -1,7 +1,7 @@
 import time
 
 from config import Config
-from pages.selenium_academy import RegisterPage
+from pages.selenium_academy.auth import RegisterPage
 
 
 def main():
