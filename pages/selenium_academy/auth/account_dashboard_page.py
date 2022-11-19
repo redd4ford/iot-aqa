@@ -7,7 +7,6 @@ from selenium.webdriver.support.wait import WebDriverWait
 
 from config import Config, MadisonIslandEndpoints
 from pages.base_page import BasePage
-from pages.selenium_academy.auth import EditAddressPage
 
 
 class AccountDashboardPage(BasePage):
